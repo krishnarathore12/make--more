@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            font-family: 'Roboto Mono', monospace;
+            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(76, 175, 80, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            background-color: #45a049;
+        }
+        #nameList {
+            margin-top: 2rem;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            border-left: 4px solid #4CAF50;
+            font-size: 14px;
+        }
+        li:hover {
+            transform: translateX(5px);
+            background-color: #E8F5E9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Make-More</h1>
+        <button onclick="generateNames()">Generate Names</button>
+        <div id="nameList"></div>
+    </div>
+
+    <script>
+        function generateNames() {
+            const button = document.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Generating...';
+
+            fetch('/generate-names')
+                .then(response => response.json())
+                .then(data => {
+                    const nameList = document.getElementById('nameList');
+                    nameList.innerHTML = '<h2>Generated Names:</h2>';
+                    const ul = document.createElement('ul');
+                    data.names.forEach((name, index) => {
+                        setTimeout(() => {
+                            const li = document.createElement('li');
+                            li.textContent = name;
+                            ul.appendChild(li);
+                        }, index * 100);
+                    });
+                    nameList.appendChild(ul);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const nameList = document.getElementById('nameList');
+                    nameList.innerHTML = '<p>Error generating names. Please try again.</p>';
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.textContent = 'Generate Names';
+                });
+        }
+    </script>
+</body>
+</html>
